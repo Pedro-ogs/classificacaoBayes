@@ -10,8 +10,8 @@ public class Classificador {
         this.desvioPadrao = new double[numClasse][numEntradas];
     }
 
-    public void setTrainingBase(List<Data> basisToBeTrained) {
-        this.trainingBase = basisToBeTrained;
+    public void setTrainingBase(List<Data> trainingBase) {
+        this.trainingBase = trainingBase;
     }
 
     public double[][] getMedia() {
@@ -27,22 +27,22 @@ public class Classificador {
         double secondClass = calculateProbability(base.getInput(), Main.typesOfClasses.get(1));
 
         if(firstClass > secondClass){
-            return 1;
+            return 0;
         }else{
-            return 2;
+            return 1;
         }
 
     }
 
     private double gaussProbabilityDensity(double x, double value, double sd){
-        double r = 1 / Math.sqrt(2 * Math.PI * sd);
+        sd = sd == 0.0 ? 0.00000001 : sd;
+        double r = 1 / Math.sqrt(2 * Math.PI * sd);//r da infinito -- desvio padrão zero
         r = r * Math.exp(-(Math.pow(x - value, 2) / (2 * Math.pow(sd, 2))));
         return r;
     }
 
     private double probabilityDensity(double[] base, int nameType){
         double result = 1;
-        //nameType = nameType - 1;
 
         for (int i = 0; i < base.length; i++){
             double mean = this.media[nameType][i];
@@ -81,7 +81,6 @@ public class Classificador {
     }
 
     public void media(double[] x, int nameType, int sampleNumber) {
-        //nameType -= 1;
         double soma = 0;
 
         for (int i = 0; i < x.length; i++)
@@ -92,12 +91,15 @@ public class Classificador {
     }
 
     public void desvioPadrao(double[] x, int classType, int sampleNumber) {
-        //classType -= 1;
         double mean = this.media[classType][sampleNumber];
 
         double sum = 0;
-        for (int i = 0; i < x.length; i++)
-            sum += Math.pow((x[i] - mean), 2);
+        for (int i = 0; i < x.length; i++) {
+            double result = Math.pow((x[i] - mean), 2);
+            String numberFormated = String.format("%.8f", result).replace(",", ".");
+            //return Double.parseDouble(numberFormated);
+            sum += Double.parseDouble(numberFormated);
+        }
 
         double r = (sum / x.length);
         this.desvioPadrao[classType][sampleNumber] = Math.sqrt(r);

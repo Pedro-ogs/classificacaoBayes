@@ -24,12 +24,12 @@ public class Main {
                 baseTreinoErro += 1;
         }
 
-        classificador.setTrainingBase(baseTreino);
+        classificador.setTrainingBase(baseTeste);
         int baseTesteErro = 0;
-        for (Data sample : baseTreino) {
+        for (Data sample : baseTeste) {
             double classification = classificador.classify(sample);
             if (classification != sample.getOutput()[0] )
-                baseTreinoErro += 1;
+                baseTesteErro += 1;
         }
 
         System.out.println("Erro de classificação base de treino: " + baseTreinoErro);
